@@ -1,18 +1,15 @@
-using System;
 using UnityEngine;
 using System.Collections;
 using TMPro;
 using UnityEngine.UI;
-
-public class WaveSpawner : MonoBehaviour
-{
+public class WaveSpawner : MonoBehaviour {
     public Transform enemyPrefab;
+    public Transform spawnPoint;
     public float timeBetweenWaves = 5f;
     private float countdown = 2f;
+    public TextMeshProUGUI waveCountdownText;
     private int waveIndex = 0;
-    public Transform spawnPoint;
-    public TextMeshProUGUI waveCountDownText;
-    private void Update()
+    void Update ()
     {
         if (countdown <= 0f)
         {
@@ -21,21 +18,23 @@ public class WaveSpawner : MonoBehaviour
         }
 
         countdown -= Time.deltaTime;
-        waveCountDownText.text = Mathf.Round(countdown).ToString();
+
+        countdown = Mathf.Clamp(countdown, 0f, Mathf.Infinity);
+
+        waveCountdownText.text = string.Format("{0:00.00}", countdown);
     }
 
-    IEnumerator SpawnWave()
+    IEnumerator SpawnWave ()
     {
         waveIndex++;
+        PlayerStats.Rounds++;
         for (int i = 0; i < waveIndex; i++)
         {
-            spawnEnemy();
+            SpawnEnemy();
             yield return new WaitForSeconds(0.5f);
         }
-       
     }
-
-    void spawnEnemy()
+    void SpawnEnemy ()
     {
         Instantiate(enemyPrefab, spawnPoint.position, spawnPoint.rotation);
     }
