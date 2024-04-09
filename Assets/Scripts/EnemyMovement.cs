@@ -1,32 +1,42 @@
 using UnityEngine;
 using System.Collections;
+using UnityEngine.AI;
 
 [RequireComponent(typeof(Enemy))]
 public class EnemyMovement : MonoBehaviour {
 
-    private Transform target;
+    private Transform _target;
     private int wavepointIndex = 0;
 
-    private Enemy enemy;
+    private Enemy _enemy;
+    // private NavMeshAgent _navAgent;
 
     void Start()
     {
-        enemy = GetComponent<Enemy>();
+        _enemy = GetComponent<Enemy>();
 
-        target = waypoints.points[0];
+        _target = waypoints.points[0];
+        // _navAgent = GetComponent<NavMeshAgent>();
+        // _navAgent.SetDestination(_target.position);
     }
 
     void Update()
     {
-        Vector3 dir = target.position - transform.position;
-        transform.Translate(dir.normalized * enemy.speed * Time.deltaTime, Space.World);
+        Vector3 dir = _target.position - transform.position;
+        transform.Translate(dir.normalized * _enemy.speed * Time.deltaTime, Space.World);
 
-        if (Vector3.Distance(transform.position, target.position) <= 0.4f)
+        if (Vector3.Distance(transform.position, _target.position) <= 0.4f)
         {
             GetNextWaypoint();
         }
-
-        enemy.speed = enemy.startSpeed;
+        
+        _enemy.speed = _enemy.startSpeed;
+        // if (Vector3.Distance(transform.position, _target.position) <= 0.4f)
+        // {
+        //     GetNextWaypoint();
+        // }
+        //
+        // _navAgent.speed = _enemy.startSpeed;
     }
 
     void GetNextWaypoint()
@@ -38,12 +48,14 @@ public class EnemyMovement : MonoBehaviour {
         }
 
         wavepointIndex++;
-        target = waypoints.points[wavepointIndex];
+        _target = waypoints.points[wavepointIndex];
+        // _navAgent.SetDestination(_target.position);
     }
 
     void EndPath()
     {
         PlayerStats.Lives--;
+        WaveSpawner.EnemiesAlive--;
         Destroy(gameObject);
     }
 
